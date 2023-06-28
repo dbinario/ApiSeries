@@ -106,14 +106,14 @@ func PostRecuperarSerie(c *gin.Context) {
 			for _, valor := range temporada.Episodes {
 
 				// Insertar datos en la tabla
-				stmt, err := db.Prepare("INSERT INTO episodios(id_serie,numero_temporada,numero_episodio,nombre_episodio) VALUES(?,?,?,?)")
+				stmt, err := db.Prepare("INSERT INTO episodios(id_serie,numero_temporada,numero_episodio,nombre_episodio,resumen) VALUES(?,?,?,?,?)")
 				if err != nil {
 					panic(err.Error())
 				}
 				defer stmt.Close()
 
 				// Ejecutar la consulta con los parámetros
-				_, err = stmt.Exec(recuperar.IdSerie, temporada.SeasonNumber, valor.EpisodeNumber, valor.Name)
+				_, err = stmt.Exec(recuperar.IdSerie, temporada.SeasonNumber, valor.EpisodeNumber, valor.Name, valor.Overview)
 				if err != nil {
 					panic(err.Error())
 				}

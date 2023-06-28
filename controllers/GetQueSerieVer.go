@@ -80,10 +80,11 @@ func GetQueSerieVer(c *gin.Context) {
 	var numeroTemporada int
 	var ultimoVisto int
 	var nombreEpisodio string
+	var resumen string
 
 	db.QueryRow("SELECT nombre_serie FROM series WHERE id_serie=?", serie).Scan(&nombreSerie)
 	db.QueryRow("SELECT nombre_temporada,numero_temporada,ultimo_visto +1 as ultvis FROM temporadas WHERE id_serie=? AND estado_temporada=1", serie).Scan(&nombreTemporada, &numeroTemporada, &ultimoVisto)
-	db.QueryRow("SELECT nombre_episodio FROM episodios WHERE id_serie=? AND numero_temporada=? AND numero_episodio=?", serie, numeroTemporada, ultimoVisto).Scan(&nombreEpisodio)
+	db.QueryRow("SELECT nombre_episodio,resumen FROM episodios WHERE id_serie=? AND numero_temporada=? AND numero_episodio=?", serie, numeroTemporada, ultimoVisto).Scan(&nombreEpisodio, &resumen)
 
 	//aqui llenamos los datos para el json
 
@@ -93,6 +94,7 @@ func GetQueSerieVer(c *gin.Context) {
 	QueSerieVer.NombreTemporada = nombreTemporada
 	QueSerieVer.Episodio = ultimoVisto
 	QueSerieVer.NombreEpisodio = nombreEpisodio
+	QueSerieVer.Resumen = resumen
 
 	//imprimimos el resultado
 	c.JSON(http.StatusOK, gin.H{

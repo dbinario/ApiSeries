@@ -26,7 +26,7 @@ func GetSeries(c *gin.Context) {
 	db.QueryRow("SELECT COUNT(*) AS total,SUM(episodios_vistos) AS vistos, SUM(faltan_ver) AS faltan_ver  FROM series").Scan(&estadoSeries.NumeroSeries, &estadoSeries.EpisodiosVistos, &estadoSeries.EpisodiosPorVer)
 
 	// Realizar la consulta
-	rows, err := db.Query("SELECT id_serie,nombre_serie, numero_episodios,episodios_vistos,faltan_ver FROM series")
+	rows, err := db.Query("SELECT id_serie,nombre_serie, episodios_activos,episodios_vistos,faltan_ver FROM series")
 	if err != nil {
 		panic(err.Error())
 	}

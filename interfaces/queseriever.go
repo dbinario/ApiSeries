@@ -7,4 +7,5 @@ type QueSerieVer struct {
 	NombreSerie     string `json:"nombre_serie"`
 	NombreTemporada string `json:"nombre_temporada"`
 	NombreEpisodio  string `json:"nombre_episodio"`
+	Resumen         string `json:"resumen"`
 }
