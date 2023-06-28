@@ -5,10 +5,10 @@ type Recuperar struct {
 	Temporada int `json:"temporada"`
 }
 
-type CapituloVisto struct {
+type EpisodioVisto struct {
 	IdSerie   int `json:"id_serie"`
 	Temporada int `json:"temporada"`
-	Capitulo  int `json:"capitulo"`
+	Episodio  int `json:"episodio"`
 }
 
 type EliminarSerie struct {

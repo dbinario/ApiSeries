@@ -56,7 +56,7 @@ func PostRecuperarSerie(c *gin.Context) {
 		defer res.Body.Close()
 
 		// Insertar datos en la tabla
-		stmt, err := db.Prepare("INSERT INTO series(id_serie,nombre_serie,numero_temporadas,numero_capitulos) VALUES(?,?,?,?)")
+		stmt, err := db.Prepare("INSERT INTO series(id_serie,nombre_serie,numero_temporadas,numero_episodios) VALUES(?,?,?,?)")
 		if err != nil {
 			panic(err.Error())
 		}
@@ -91,7 +91,7 @@ func PostRecuperarSerie(c *gin.Context) {
 			defer res.Body.Close()
 
 			// Insertar datos en la tabla
-			stmt, err := db.Prepare("INSERT INTO temporadas(id_serie,numero_temporada,nombre_temporada,numero_capitulos) VALUES(?,?,?,?)")
+			stmt, err := db.Prepare("INSERT INTO temporadas(id_serie,numero_temporada,nombre_temporada,numero_episodios) VALUES(?,?,?,?)")
 			if err != nil {
 				panic(err.Error())
 			}
@@ -106,7 +106,7 @@ func PostRecuperarSerie(c *gin.Context) {
 			for _, valor := range temporada.Episodes {
 
 				// Insertar datos en la tabla
-				stmt, err := db.Prepare("INSERT INTO capitulos(id_serie,numero_temporada,numero_episodio,nombre_capitulo) VALUES(?,?,?,?)")
+				stmt, err := db.Prepare("INSERT INTO episodios(id_serie,numero_temporada,numero_episodio,nombre_episodio) VALUES(?,?,?,?)")
 				if err != nil {
 					panic(err.Error())
 				}
@@ -126,6 +126,8 @@ func PostRecuperarSerie(c *gin.Context) {
 			"message": "Serie " + serie.Name + " recuperada de manera exitosa",
 		})
 
-	}
+	} //TODO crear else para actualizar
+
+	db.Exec("CALL actualizarVistos();")
 
 }

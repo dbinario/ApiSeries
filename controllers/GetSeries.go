@@ -23,10 +23,10 @@ func GetSeries(c *gin.Context) {
 
 	var estadoSeries interfaces.EstadoSeries
 
-	db.QueryRow("SELECT COUNT(*) AS total,SUM(capitulos_vistos) AS vistos, SUM(faltan_ver) AS faltan_ver  FROM series").Scan(&estadoSeries.NumeroSeries, &estadoSeries.CapitulosVistos, &estadoSeries.CapitulosPorVer)
+	db.QueryRow("SELECT COUNT(*) AS total,SUM(episodios_vistos) AS vistos, SUM(faltan_ver) AS faltan_ver  FROM series").Scan(&estadoSeries.NumeroSeries, &estadoSeries.EpisodiosVistos, &estadoSeries.EpisodiosPorVer)
 
 	// Realizar la consulta
-	rows, err := db.Query("SELECT id_serie,nombre_serie, numero_capitulos,capitulos_vistos,faltan_ver FROM series")
+	rows, err := db.Query("SELECT id_serie,nombre_serie, numero_episodios,episodios_vistos,faltan_ver FROM series")
 	if err != nil {
 		panic(err.Error())
 	}
@@ -37,12 +37,12 @@ func GetSeries(c *gin.Context) {
 		serie := struct {
 			IDserie         int    `json:"id_serie"`
 			NombreSerie     string `json:"nombre_serie"`
-			NumeroCapitulos int    `json:"numero_capitulos"`
-			CapitulosVistos int    `json:"capitulos_vistos"`
-			CapitulosPorVer int    `json:"capitulos_por_ver"`
+			NumeroEpisodios int    `json:"numero_episodios"`
+			EpisodiosVistos int    `json:"episodios_vistos"`
+			EpisodiosPorVer int    `json:"episodios_por_ver"`
 		}{}
 
-		err := rows.Scan(&serie.IDserie, &serie.NombreSerie, &serie.NumeroCapitulos, &serie.CapitulosVistos, &serie.CapitulosPorVer)
+		err := rows.Scan(&serie.IDserie, &serie.NombreSerie, &serie.NumeroEpisodios, &serie.EpisodiosVistos, &serie.EpisodiosPorVer)
 		if err != nil {
 			panic(err.Error())
 		}

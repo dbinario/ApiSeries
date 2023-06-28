@@ -20,8 +20,9 @@ func main() {
 	router.Use(cors.Default())
 
 	router.GET("/series", controllers.GetSeries)
+	router.GET("/queseriever", controllers.GetQueSerieVer)
 	router.POST("/serie", controllers.PostRecuperarSerie)
-	router.POST("/capitulovisto", controllers.PostCapituloVisto)
+	router.POST("/capitulovisto", controllers.PostEpisodioVisto)
 	router.DELETE("/eliminarserie", controllers.DeleteSerie)
 	router.DELETE("/eliminartemporada", controllers.DeleteTemporada)
 
