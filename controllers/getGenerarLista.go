@@ -10,6 +10,18 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
+type Temporada struct {
+	idSerie         int
+	numTemporada    int
+	nombreTemporada string
+}
+
+type Capitulos struct {
+	idSerie         int
+	numTemporada    int
+	nombreTemporada string
+}
+
 func GetGenerarLista(c *gin.Context) {
 
 	var db *sql.DB
@@ -85,4 +97,21 @@ func GetGenerarLista(c *gin.Context) {
 		panic(err.Error())
 	}
 	defer rows.Close()
+
+	//recorremos las temporadas para saber que capitulos debo recorrer
+
+	temporadaRow := []Temporada{}
+
+	for rows.Next() {
+
+		var elemento Temporada
+		err := rows.Scan(&elemento.idSerie, &elemento.numTemporada, &elemento.nombreTemporada)
+		if err != nil {
+			fmt.Println(err)
+			return
+		}
+		temporadaRow = append(temporadaRow, elemento)
+	}
+
+	fmt.Println(temporadaRow)
 }
