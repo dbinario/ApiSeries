@@ -21,6 +21,7 @@ func main() {
 
 	router.GET("/series", controllers.GetSeries)
 	router.GET("/queseriever", controllers.GetQueSerieVer)
+	router.GET("/generarlista", controllers.GetGenerarLista)
 	router.POST("/serie", controllers.PostRecuperarSerie)
 	router.POST("/capitulovisto", controllers.PostEpisodioVisto)
 	router.DELETE("/eliminarserie", controllers.DeleteSerie)
