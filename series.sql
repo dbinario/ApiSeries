@@ -123,6 +123,24 @@ CREATE TABLE IF NOT EXISTS `episodios` (
 
 -- La exportación de datos fue deseleccionada.
 
+-- Volcando estructura para procedimiento series.listaEpisodios
+DELIMITER //
+CREATE PROCEDURE `listaEpisodios`()
+BEGIN
+
+SELECT A.id_serie,A.nombre_serie,B.numero_temporada,B.nombre_temporada,C.numero_episodio,C.nombre_episodio
+FROM 
+(SELECT id_serie,nombre_serie FROM series)A
+INNER JOIN 
+(SELECT id_serie,numero_temporada,nombre_temporada FROM temporadas WHERE estado_temporada=1)B 
+ON A.id_serie=B.id_serie
+INNER JOIN 
+(SELECT id_serie,numero_temporada,numero_episodio,nombre_episodio FROM episodios WHERE estado=0 ORDER BY id_serie,numero_temporada,numero_episodio)C 
+ON A.id_serie=C.id_serie AND B.numero_temporada=C.numero_temporada;
+
+END//
+DELIMITER ;
+
 -- Volcando estructura para tabla series.series
 CREATE TABLE IF NOT EXISTS `series` (
   `id` int NOT NULL AUTO_INCREMENT,
