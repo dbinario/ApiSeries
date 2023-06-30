@@ -149,7 +149,7 @@ func GetGenerarLista(c *gin.Context) {
 
 	c.JSON(http.StatusOK, gin.H{
 
-		"estado": listaSeries,
+		"message": listaSeries,
 	})
 
 }
