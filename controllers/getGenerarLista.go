@@ -2,29 +2,21 @@ package controllers
 
 import (
 	"apiseries/app"
+	"apiseries/interfaces"
 	"database/sql"
 	"fmt"
 	"math/rand"
+	"net/http"
 	"time"
 
 	"github.com/gin-gonic/gin"
 )
 
-type Temporada struct {
-	idSerie         int
-	numTemporada    int
-	nombreTemporada string
-}
-
-type Capitulos struct {
-	idSerie         int
-	numTemporada    int
-	nombreTemporada string
-}
-
 func GetGenerarLista(c *gin.Context) {
 
 	var db *sql.DB
+
+	var listaSeries interfaces.ListaSeries
 
 	//se obtiene la conexion de la base de datos
 
@@ -60,9 +52,7 @@ func GetGenerarLista(c *gin.Context) {
 
 	lista := []int{}
 
-	fmt.Println(rangos)
-
-	//llenamos la lista de acuerdo al numeor de episodios pendientes por ver por temporadas activas
+	//llenamos la lista de acuerdo al numero de episodios pendientes por ver por temporadas activas
 
 	for campo, valor := range rangos {
 
@@ -74,7 +64,8 @@ func GetGenerarLista(c *gin.Context) {
 
 	}
 
-	fmt.Println(lista)
+	listaSeries.EpisodiosPorVer = suma
+	listaSeries.NumeroSeries = len(rangos)
 
 	// Establecer la semilla del generador de números aleatorios
 	r := rand.New(rand.NewSource(time.Now().UnixNano()))
@@ -85,33 +76,80 @@ func GetGenerarLista(c *gin.Context) {
 		lista[i], lista[j] = lista[j], lista[i]
 	}
 
-	//en la lista ya el orden de ver las series
+	//recorremos las temporadas para saber que capitulos debo recorrer
 
-	fmt.Println(lista)
-
-	//extraemos la informacion
-
-	// Realizar la consulta
-	rows, err = db.Query("SELECT id_serie,numero_temporada,nombre_temporada FROM temporadas WHERE estado_temporada=1")
+	rows, err = db.Query("CALL listaEpisodios()")
 	if err != nil {
 		panic(err.Error())
 	}
 	defer rows.Close()
 
-	//recorremos las temporadas para saber que capitulos debo recorrer
-
-	temporadaRow := []Temporada{}
+	episodiosTotales := []struct {
+		IDserie         int    `json:"id_serie"`
+		NombreSerie     string `json:"nombre_serie"`
+		NumeroTemporada int    `json:"numero_temporada"`
+		NombreTemporada string `json:"nombre_temporada"`
+		NumeroEpisodio  int    `json:"numero_episodio"`
+		NombreEpisodio  string `json:"nombre_episodio"`
+	}{}
 
 	for rows.Next() {
 
-		var elemento Temporada
-		err := rows.Scan(&elemento.idSerie, &elemento.numTemporada, &elemento.nombreTemporada)
+		episodio := struct {
+			IDserie         int    `json:"id_serie"`
+			NombreSerie     string `json:"nombre_serie"`
+			NumeroTemporada int    `json:"numero_temporada"`
+			NombreTemporada string `json:"nombre_temporada"`
+			NumeroEpisodio  int    `json:"numero_episodio"`
+			NombreEpisodio  string `json:"nombre_episodio"`
+		}{}
+
+		err := rows.Scan(&episodio.IDserie, &episodio.NombreSerie, &episodio.NumeroTemporada, &episodio.NombreTemporada, &episodio.NumeroEpisodio, &episodio.NombreEpisodio)
 		if err != nil {
 			fmt.Println(err)
 			return
 		}
-		temporadaRow = append(temporadaRow, elemento)
+
+		//episodios = append(episodios, episodios)
+
+		episodiosTotales = append(episodiosTotales, episodio)
+
 	}
 
-	fmt.Println(temporadaRow)
+	//en episodiosTotales tenemos un array de de structs
+
+	//metemos el ray de struct en un orden aleatorio conservando el orden de los capitulos en la liste series
+
+	for _, valor := range lista {
+
+		indice := 0
+		bandera := false
+		for j, k := range episodiosTotales {
+
+			if valor == k.IDserie {
+
+				listaSeries.Episodios = append(listaSeries.Episodios, k)
+
+				bandera = true
+				indice = j
+				break
+			}
+
+		}
+
+		if bandera {
+
+			episodiosTotales = append(episodiosTotales[:indice], episodiosTotales[indice+1:]...)
+
+		}
+
+		bandera = false
+
+	}
+
+	c.JSON(http.StatusOK, gin.H{
+
+		"estado": listaSeries,
+	})
+
 }
